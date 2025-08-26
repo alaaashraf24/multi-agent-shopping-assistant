@@ -1,114 +1,86 @@
-# ShopSmart-EG 🛍️ — Multi‑Agent Shopping Assistant (Amazon.eg, Jumia, Noon Egypt)
+# 🛒 Multi-Agent Shopping Assistant (GenAI + Streamlit)
 
-A resume‑ready, Streamlit‑deployed **multi‑agent** shopping assistant that:
-- Searches **Amazon.eg**, **Jumia (Egypt)**, and **Noon (Egypt)** in real time using **Tavily**.
-- Extracts product details from product pages (price, rating, title, availability, images).
-- Ranks/compares and returns a concise recommendation with reasoning.
-- Ships with a polished Streamlit GUI and a modular, interview‑friendly codebase.
-
-> Built to showcase Generative AI + LLM engineering skills: multi‑agent orchestration (CrewAI), tool design, web extraction, ranking, and Streamlit UX.
+A **multi-agent Generative AI shopping assistant** that helps users find the best deals on **Amazon Egypt, Jumia, and Noon** using **real-time search** powered by [Tavily](https://tavily.com/) and **reasoning with Gemini LLM**.  
+Built with **Streamlit** for an interactive GUI and **optional voice input** for a hands-free experience.
 
 ---
 
-## ✨ Highlights
-- **Agents** (CrewAI): *Planner*, *Searcher*, *Extractor*, *Analyst*, *Reviewer*, *Recommender*.
-- **Real‑time search** via **Tavily** (no Serper; works in Egypt).
-- **Target sites**: `amazon.eg`, `jumia.com.eg`, `noon.com/egypt-en`.
-- **Schema‑aware extraction** (JSON‑LD via `extruct`) + fallback parsing with BeautifulSoup.
-- **Ranking** by price/quality + constraint satisfaction (budget, brand, features).
-- **Streamlit UI** with compare table, per‑item drill‑down, and final recommendation.
-- **Resume‑ready** structure, typing, tests, and clear README.
+## ✨ Features
+- 🤖 **Multi-Agent Orchestration** – specialized AI agents for product search, filtering, and recommendation.  
+- 🔎 **Real-Time Web Search** – live product data from **Amazon Egypt, Jumia, Noon** via Tavily API.  
+- 🧠 **LLM Reasoning** – Google **Gemini** evaluates, compares, and summarizes options.  
+- 🎨 **Streamlit GUI** – clean, interactive interface with filters (budget, rating, brand, features).  
+- 🎤 **Voice Input (Optional)** – powered by `streamlit-webrtc` + `SpeechRecognition`.  
+- 🔐 **Secure API Handling** – credentials stored in `.streamlit/secrets.toml`.  
 
 ---
 
-## 🧱 Architecture
+## 🏗 Architecture
 
 ```mermaid
-flowchart LR
-    U[User] -->|Query & Filters| P(Planner Agent)
-    P -->|search queries| S(Search Agent via Tavily)
-    S -->|urls (amazon.eg, jumia, noon)| X(Extractor Agent)
-    X -->|normalized products| A(Analyst/Ranker Agent)
-    A -->|top candidates| R(Reviewer/Summarizer Agent)
-    R -->|final summary| C(Recommender Agent)
-    C -->|result JSON| UI(Streamlit UI)
-```
-
-**Agents implemented with CrewAI** and custom tools for Tavily search and per‑site extraction.
+flowchart TD
+    User[User: text/voice query] --> UI[Streamlit App]
+    UI --> Agents[Multi-Agent System]
+    Agents -->|Query| Tavily[Tavily Search API]
+    Tavily --> Agents
+    Agents -->|Reasoning| Gemini[Google Gemini LLM]
+    Gemini --> Agents
+    Agents --> UI
+    UI --> User[Results + Recommendations]
+````
 
 ---
 
-## 🚀 Quickstart
+## 🚀 Getting Started
+
+### 1. Clone the repo
 
 ```bash
-python -m venv .venv && source .venv/bin/activate   # on Windows: .venv\Scripts\activate
+git clone https://github.com/alaaashraf24/multi-agent-shopping-assistant.git
+cd multi-agent-shopping-assistant
+```
+
+### 2. Install dependencies
+
+```bash
 pip install -r requirements.txt
-cp .env.example .env
-# fill in TAVILY_API_KEY and an LLM key (OpenAI/Anthropic/Google)
+```
+
+### 3. Add your API keys
+
+Create `.streamlit/secrets.toml`:
+
+```toml
+TAVILY_API_KEY = "your_tavily_key_here"
+GOOGLE_API_KEY = "your_gemini_key_here"
+GOOGLE_MODEL = "gemini-2.0-flash-lite"
+LLM_PROVIDER = "google"
+```
+
+### 4. Run the app
+
+```bash
 streamlit run app/streamlit_app.py
 ```
 
-> If you don’t have OpenAI/Anthropic/Google keys, set `LLM_PROVIDER=google` and use a free Gemini tier if available in your region, or switch to a local model via LiteLLM (optional, see code comments).
+---
+
+## 🧑‍💻 Skills Demonstrated
+
+This project highlights key skills for **Generative AI & LLM Engineer roles**:
+
+* **Multi-Agent Systems**: Orchestrating specialized AI agents for task division.
+* **Generative AI (Gemini)**: Using LLMs for reasoning and summarization.
+* **Real-Time Web Integration**: Live product data via Tavily API.
+* **MLOps for Apps**: Secrets management (`.streamlit/secrets.toml`), clean repo structure.
+* **Interactive UIs**: Streamlit dashboards with filters, visualization, and voice input.
+* **Deployment-Ready**: Packaged for GitHub + Streamlit Cloud.
 
 ---
 
-## ⚙️ Configuration
+## 🤝 Contributing
 
-- `.env` controls keys and provider:
-  - `TAVILY_API_KEY` (required for search)
-  - `LLM_PROVIDER` one of: `openai`, `anthropic`, `google`
-  - Models: `OPENAI_MODEL`, `ANTHROPIC_MODEL`, `GOOGLE_MODEL`
-
-- **Domains searched** (hard‑restricted): `amazon.eg`, `jumia.com.eg`, `noon.com/egypt-en`
+Pull requests are welcome! For major changes, please open an issue first.
 
 ---
 
-## 🧩 Repo Structure
-
-```
-shopsmart-eg/
-├─ app/
-│  └─ streamlit_app.py
-├─ shopsmart/
-│  ├─ __init__.py
-│  ├─ pipeline.py
-│  ├─ agents.py
-│  ├─ core/
-│  │  ├─ models.py
-│  │  ├─ ranker.py
-│  │  └─ utils.py
-│  └─ tools/
-│     ├─ tavily_tool.py
-│     └─ scrapers.py
-├─ tests/
-│  └─ test_extractors.py
-├─ .env.example
-├─ requirements.txt
-├─ LICENSE
-└─ README.md
-```
-
----
-
-## 🔐 Legal & Ethics
-
-- Respect targets’ **robots.txt** and **Terms of Service**. This project requests only a few pages, adds backoff, and prefers public metadata (JSON‑LD). Scraping any site may be disallowed; you are responsible for compliance.
-- For Amazon, consider the **Product Advertising API** for full‑fidelity data (requires Associate account). This demo uses public pages.
-
----
-
-## 🧪 Tests
-
-```bash
-pytest -q
-```
-
----
-
-## 📄 Resume Tips
-
-- Emphasize: *multi‑agent orchestration (CrewAI)*, *tooling (Tavily + Extractors)*, *schema parsing*, *ranking*, and *Streamlit UX*.
-- Include a GIF/screenshot of the Streamlit app.
-- Add a section on **limitations** (anti‑bot measures, rate limits) and **future work** (RAG over historical prices, LangGraph orchestration, async scraping, vector search).
-
----

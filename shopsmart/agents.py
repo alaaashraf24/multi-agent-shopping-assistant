@@ -74,55 +74,56 @@ def recommender_agent(llm: LLM) -> Agent:
 # ---- Tasks ----
 def make_tasks(planner: Agent, searcher: Agent, extractor: Agent, analyst: Agent, reviewer: Agent, recommender: Agent):
     plan_task = Task(
-        description=(
-            "Given the user_input, produce a JSON SearchPlan {query, brand?, max_price?, min_rating?, features[]}.
-"
-            "Prefer EGP and Egypt-specific terms. Keep query short and specific."
-        ),
+        description="""
+Given the user_input, produce a JSON SearchPlan {query, brand?, max_price?, min_rating?, features[]}.
+Prefer EGP and Egypt-specific terms. Keep query short and specific.
+""",
         expected_output="A compact JSON object for SearchPlan.",
         agent=planner,
         output_json=SearchPlan.model_json_schema(),  # hint
     )
 
     search_task = Task(
-        description=(
-            "Use Tavily to search for product pages on Amazon.eg, Jumia Egypt, and Noon Egypt based on the SearchPlan.query. "
-            "Return a Python list of up to 12 URLs."
-        ),
+        description="""
+Use Tavily to search for product pages on Amazon.eg, Jumia Egypt, and Noon Egypt based on the SearchPlan.query.
+Return a Python list of up to 12 URLs.
+""",
         expected_output="A list[str] of URLs.",
         agent=searcher,
     )
 
     extract_task = Task(
-        description=(
-            "For each URL, fetch page HTML and extract normalized fields: title, price (EGP), rating, review_count, images. "
-            "Return a Python list of Product dicts."
-        ),
+        description="""
+For each URL, fetch page HTML and extract normalized fields:
+title, price (EGP), rating, review_count, images.
+Return a Python list of Product dicts.
+""",
         expected_output="A list[Product] serialized as dicts.",
         agent=extractor,
     )
 
     analyze_task = Task(
-        description=(
-            "Given extracted products and the SearchPlan constraints, rank and shortlist the best 5. "
-            "Return the top 5 as a list of dicts."
-        ),
+        description="""
+Given extracted products and the SearchPlan constraints, rank and shortlist the best 5.
+Return the top 5 as a list of dicts.
+""",
         expected_output="Top-5 product dicts list.",
         agent=analyst,
     )
 
     review_task = Task(
-        description=(
-            "Summarize pros/cons and suitability for the shortlisted products in 5-8 concise bullet points total."
-        ),
+        description="""
+Summarize pros/cons and suitability for the shortlisted products in 5–8 concise bullet points total.
+""",
         expected_output="A brief markdown summary string.",
         agent=reviewer,
     )
 
     recommend_task = Task(
-        description=(
-            "Choose the single best product for the user. Output JSON: {best: Product, runners_up: [Product, Product], reasoning:str}."
-        ),
+        description="""
+Choose the single best product for the user.
+Output JSON: {best: Product, runners_up: [Product, Product], reasoning:str}.
+""",
         expected_output="Recommendation JSON string.",
         agent=recommender,
     )

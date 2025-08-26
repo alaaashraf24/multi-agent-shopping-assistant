@@ -5,13 +5,16 @@ import streamlit as st
 # Ensure project root is on Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+# 🚫 Disable chromadb completely before crewai loads
+import shopsmart.disable_chroma
+
 # Load secrets directly
 os.environ["TAVILY_API_KEY"] = st.secrets["TAVILY_API_KEY"]
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 os.environ["GOOGLE_MODEL"] = st.secrets.get("GOOGLE_MODEL", "gemini-2.0-flash-lite")
 os.environ["LLM_PROVIDER"] = st.secrets.get("LLM_PROVIDER", "google")
 
-# 🚫 Prevent crewai from trying to use chromadb
+# 🚫 Prevent crewai from trying to use chromadb backend
 os.environ["CREWAI_STORAGE_BACKEND"] = "none"
 
 from shopsmart.agents import run_pipeline
@@ -19,6 +22,7 @@ import json
 import pandas as pd
 
 st.set_page_config(page_title="ShopSmart-EG", page_icon="🛍️", layout="wide")
+
 
 with st.sidebar:
     st.title("🛍️ ShopSmart-EG")

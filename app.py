@@ -1,17 +1,19 @@
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-import json
-import pandas as pd
+import sys
+import os
 import streamlit as st
 
-# Load API keys from Streamlit secrets
+# Ensure project root is on Python path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Load secrets directly
 os.environ["TAVILY_API_KEY"] = st.secrets["TAVILY_API_KEY"]
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 os.environ["GOOGLE_MODEL"] = st.secrets.get("GOOGLE_MODEL", "gemini-2.0-flash-lite")
 os.environ["LLM_PROVIDER"] = st.secrets.get("LLM_PROVIDER", "google")
-from dotenv import load_dotenv
+
 from shopsmart.agents import run_pipeline
+import json
+import pandas as pd
 
 st.set_page_config(page_title="ShopSmart-EG", page_icon="🛍️", layout="wide")
 

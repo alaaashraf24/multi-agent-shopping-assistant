@@ -11,6 +11,9 @@ os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 os.environ["GOOGLE_MODEL"] = st.secrets.get("GOOGLE_MODEL", "gemini-2.0-flash-lite")
 os.environ["LLM_PROVIDER"] = st.secrets.get("LLM_PROVIDER", "google")
 
+# 🚫 Prevent crewai from trying to use chromadb
+os.environ["CREWAI_STORAGE_BACKEND"] = "none"
+
 from shopsmart.agents import run_pipeline
 import json
 import pandas as pd

@@ -1,8 +1,10 @@
-import os, json
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import json
 import pandas as pd
 import streamlit as st
 
-import os
 # Load API keys from Streamlit secrets
 os.environ["TAVILY_API_KEY"] = st.secrets["TAVILY_API_KEY"]
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
